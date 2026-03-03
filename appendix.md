@@ -1,116 +1,104 @@
-Appendix – Implementation Notes, Planner Contract, and Profile Action Catalogues
+# Appendix  
+## Implementation Notes, Planner Contract, and Profile Action Catalogues
 
 This appendix consolidates implementation-level artifacts that support replication without expanding the main methodological narrative:
 
-Per-profile action catalogues
+1. Per-profile action catalogues  
+2. Automation and analysis software stack  
+3. Compact checklist of versioned components  
 
-Automation and analysis software stack
+---
 
-Policy hyperparameters and state management
+## Profile Policy Parameterization and State Management
 
-Constrained planner interface (LLM contract)
+This section reports the policy hyperparameters that operationalize:
 
-Versioned components checklist
+pi(a | P)
 
-1. Profile Policy Parameterization and State Management
+Reporting these values makes the behavioral assumptions explicit and supports reproducibility at the mechanism level, even when byte-level trace determinism is not expected.
 
-This section documents the policy hyperparameters operationalizing
+### Policy Hyperparameters
 
-𝜋
-(
-⋅
-∣
-𝑃
-)
-π(⋅∣P).
+| Profile | Action-type distribution w_P | N_max | Delay / dwell ranges | State window K and resampling M | Fallback policy |
+|----------|-----------------------------|--------|----------------------|----------------------------------|-----------------|
+| Regular user | Categorical over {buscar_google, abrir_url, mirar_youtube, revisar_correo, ver_streaming, usar_twitter} with weights fill | fill | δ in [0,25] s; dwell/scroll bounds fill | K=fill targets; M=fill attempts | Safe open/search from allowlisted targets (fill) |
+| Gamer | Deterministic session scaffold with stochastic perturbations (event jitter/drop/idle injection) parameters fill | fill | Update waits and session pacing fill | K=fill recent segments; M=fill | Resume baseline loop / idle segment (fill) |
+| Administrator | Categorical over host-actions (SSH, SFTP, ICMP, DNS, HTTP probes) with weights fill | fill | Typing/inter-command delays fill | K=fill hosts; M=fill | Select alternative host/action class (fill) |
 
-Even when byte-level determinism is not expected, these parameters ensure procedural reproducibility.
+Fields marked **fill** should be instantiated with the exact values used in the experiments.
 
-Policy Hyperparameters
-Profile	Action Distribution	N_max	Delay / Dwell	State Window (K) & Resampling (M)	Fallback
-Regular user	Categorical over {search_google, open_url, watch_youtube, show_email, play_streaming, use_twitter}	fill	δ ∈ [0,25] s	K=fill, M=fill	Safe open/search
-Gamer	Deterministic scaffold + stochastic perturbations	fill	Update waits & pacing	K=fill, M=fill	Resume loop
-Administrator	Categorical over {SSH, SFTP, ICMP, DNS, HTTP probes}	fill	Inter-command delays	K=fill, M=fill	Alternate host/action
+---
 
-Fields marked fill must be instantiated from configuration constants.
+## Per-Profile Action Catalogues
 
-2. Per-Profile Action Catalogues
-Regular User (Web-Centric)
+### Regular user (web-centric)
 
-The agent operates through browser automation driven by a high-level planner.
+The regular-user agent operates exclusively through browser interaction driven by a high-level planner and randomized interaction timing.
 
 Actions:
 
-Request navigation decision from planner
+1. Request a high-level navigation decision from the planner  
+2. Navigate to web pages conditioned on the selected browsing profile  
+3. Watch streaming content  
+4. Watch YouTube content  
+5. Interact with social media (e.g., X)  
+6. Access webmail  
+7. Emulate human interaction through randomized pauses and scrolling  
 
-Navigate to selected page
+---
 
-Watch streaming content
+### Gamer (interactive + VoIP)
 
-Watch YouTube
-
-Interact with social media (X)
-
-Access webmail
-
-Randomized pauses and scrolling
-
-Gamer (Interactive + VoIP)
-
-The gamer agent executes gameplay with concurrent real-time communication.
+The gamer agent executes a controlled gameplay session with concurrent real-time communication.
 
 Sequence:
 
-Launch Steam and Discord
+1. Launch the required clients (Steam and Discord/VoIP)  
+2. Wait for and apply client/game updates when present  
+3. Launch the game and execute recorded interaction traces with injected randomness  
+4. Generate non-informational synthetic audio to drive VoIP traffic  
 
-Apply updates if present
+---
 
-Launch game and execute recorded interactions with randomness
+### Network Administrator (internal management)
 
-Generate synthetic non-informational audio for VoIP
-
-Network Administrator (Internal Management)
-
-The administrator agent operates inside a host-only topology.
+The administrator agent emulates benign management activity within a host-only topology.
 
 Actions:
 
-TCP connectivity checks
+1. TCP connectivity checks to managed hosts  
+2. Establish interactive SSH sessions  
+3. Execute system and network monitoring commands  
+4. Inspect and partially read system logs  
+5. Transfer files via SFTP  
+6. Generate ICMP and HTTP traffic for reachability and service checks  
 
-SSH interactive sessions
+---
 
-Monitoring commands
+## Constrained Planner Interface (Regular-User Profile)
 
-Log inspection
+The regular-user agent uses a language-model-backed planner only to instantiate high-level navigation decisions (e.g., what to search for, which benign URL to open, and how long to dwell).
 
-SFTP transfers
-
-ICMP / HTTP service probes
-
-3. Constrained Planner Interface (Regular User Profile)
-
-The LLM is used only for high-level navigation decisions.
-All packet-level behavior emerges from real application execution.
+All packet- and protocol-level properties remain an emergent result of executing real applications and network stacks.
 
 The planner must return a schema-valid JSON object.
 
-Invalid outputs are rejected.
+---
 
-Allowed Action Types
+### Allowed Action Types
 
-search_google
+- search_google  
+- open_url  
+- watch_youtube  
+- show_email  
+- play_streaming  
+- use_twitter  
 
-open_url
+---
 
-watch_youtube
+### Enforced JSON Schema
 
-show_email
-
-play_streaming
-
-use_twitter
-
-JSON Schema (Enforced at Runtime)
+```json
 {
   "type": "object",
   "required": ["type", "delay"],
@@ -133,30 +121,57 @@ JSON Schema (Enforced at Runtime)
   },
   "additionalProperties": false
 }
-Example Valid Outputs
-{"type":"search_google","term":"latest news on network security","delay":15}
-{"type":"open_url","url":"https://www.bbc.com/mundo","delay":10}
-{"type":"watch_youtube","search":"introductory Python programming","delay":18}
-Example Invalid Outputs
+
+{"type":"search_google","termin":"latest network security incidents","delay":12}
+{"tipo":"search_google","termino":"weather forecast Malaga","delay":9}
+{"tipo":"open_url","url":"https://www.wikipedia.org/","delay":8}
+{"tipo":"watch_youtube","search":"computer networks lecture","delay":17}
+{"tipo":"show_correo","delay":14}
+
 {"type":"open_url","term":"somewhere","delay":10}
 {"type":"watch_youtube","delay":60}
 {"type":"hack_wifi","delay":10}
-Fallback Policy
 
-If schema validation fails:
+Invalid because:
 
-Action is discarded
+Missing required fields
 
-A predefined safe action is executed
+Delay outside allowed range
 
-The invalid output is logged
+Action type not in permitted enum
 
-This ensures execution safety and auditability.
 
-LLM Configuration Record (Example)
+
+Validation and Fallback Policy
+
+Planner outputs are validated against the enforced JSON schema before execution.
+
+If validation fails:
+
+The agent performs up to R_retry re-queries
+
+If all retries fail, a predefined safe fallback action is executed
+
+Raw output, validation error, fallback action, and prompt ID are logged
+
+Decoding Configuration and Versioned Prompts
+
+Each run records:
+
+Model identifier
+
+Decoding parameters
+
+Prompt version
+
+Prompt SHA256
+
+Schema version
+
+Example:
 llm:
   provider: groq
-  model: <MODEL_ID_EXACT>
+  model: <MODEL_ID_EXACTO>
   temperature: 0.7
   top_p: 0.9
   max_tokens: 64
@@ -168,20 +183,21 @@ artifacts:
   prompt_version: web_planner_v1
   prompt_sha256: <SHA256_OF_TEMPLATE>
   schema_version: planner_schema_v1
-4. Automation and Analysis Software Stack
+
+Automation and Analysis Software Stack
 Component	Role
 Selenium + undetected_chromedriver	Browser automation
 requests	Planner/API invocation
 pyautogui / pynput	Gameplay interaction
-subprocess	External app orchestration
+subprocess	Launch external applications
 sounddevice / soundfile	Synthetic VoIP audio
 paramiko	SSH/SFTP automation
 Scapy + Matplotlib	PCAP parsing and analysis
-5. Versioned Components Checklist
+Versioned Components Checklist
 
-To ensure reproducibility, record exact versions:
+Record exact versions:
 
-Component	Version
+Component	Exact version
 VirtualBox	fill
 Windows build	fill
 Linux build	fill
