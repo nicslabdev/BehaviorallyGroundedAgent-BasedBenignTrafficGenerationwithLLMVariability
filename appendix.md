@@ -198,10 +198,27 @@ artifacts:
 |----------|-----------------------------|
 | Selenium + undetected_chromedriver | Browser automation for the regular-user profile |
 | Requests | Planner/API invocation |
-| Pyautogui / pynput | 	Gameplay interaction |
+| Pyautogui / pynput | Gameplay interaction |
 | Subprocess | Launch external applications |
 | Sounddevice / soundfile | Synthetic VoIP audio |
 | Paramiko | SSH/SFTP automation |
 | Scapy + Matplotlib | PCAP parsing and analysis | 
 	
 Versioned Components Checklist
+
+## Versioned components checklist
+
+| Component | Exact version / identifier |
+|----------|-----------------------------|
+| Hypervisor (Oracle VM VirtualBox) |  |
+| Windows guest OS build (regular/gamer) |  |
+| Linux guest OS build (administrator) |  |
+| Browser (regular user) |  |
+| Steam client (gamer) |  |
+| Discord client (gamer) |  |
+| Game title + build (gamer) |  |
+| Wireshark version + capture interface |   |
+| tcpdump version + capture interface |   |
+| Agent code revision (e.g., Git commit) |   |
+
+
