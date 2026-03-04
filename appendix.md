@@ -1,16 +1,43 @@
-# Appendix  
-## Implementation Notes, Planner Contract, and Profile Action Catalogues
+# Appendix A. Run Manifest Field Checklist
 
-This appendix consolidates implementation-level artifacts that support replication without expanding the main methodological narrative:
+To support procedural reproducibility and post-hoc auditing, the frame-
+work can optionally record a per-run manifest capturing environment prove-
+nance, capture provenance, and run metadata. The manifest is intended to
+make experimental conditions auditable without implying byte-level trace
+determinism.
 
-1. Per-profile action catalogues  
-2. Automation and analysis software stack  
-3. Compact checklist of versioned components  
+| Component | Exact version / identifier |
+|----------|-----------------------------|
+| Hypervisor (Oracle VM VirtualBox) |  |
+| Windows guest OS build (regular/gamer) |  |
+| Linux guest OS build (administrator) |  |
+| Browser (regular user) |  |
+| Steam client (gamer) |  |
+| Discord client (gamer) |  |
+| Game title + build (gamer) |  |
+| Wireshark version + capture interface |   |
+| tcpdump version + capture interface |   |
+| Agent code revision (e.g., Git commit) |   |
+
+
+# Appendix B. Implementation Notes, Planner Contract, and Profile Action Catalogues
+
+This appendix consolidates implementation-level artifacts that support
+replication without expanding the main methodological narrative: (i) per-
+profile action catalogues and (ii) the automation and analysis software stack,
+including the constrained planner interface and policy parameterization. 
 
 ---
 
 ## Profile Policy Parameterization and State Management
 
+Table B.7 reports the policy hyperparameters that operationalize π(· | P)
+(Section 4.2.1). Reporting these values makes the behavioral assumptions
+explicit and supports reproducibility at the mechanism level, even when byte-
+level trace determinism is not expected.
+
+
+quitar
 This section reports the policy hyperparameters that operationalize:
 
 pi(a | P)
@@ -33,70 +60,80 @@ Fields marked **fill** should be instantiated with the exact values used in the 
 
 ### Regular user (web-centric)
 
-The regular-user agent operates exclusively through browser interaction driven by a high-level planner and randomized interaction timing.
-
-Actions:
-
-1. Request a high-level navigation decision from the planner  
-2. Navigate to web pages conditioned on the selected browsing profile  
-3. Watch streaming content  
-4. Watch YouTube content  
-5. Interact with social media (e.g., X)  
-6. Access webmail  
-7. Emulate human interaction through randomized pauses and scrolling  
+Regular user (web-centric).. The regular-user agent operates exclusively through
+browser interaction driven by a high-level planner and randomized interac-
+tion timing. The action catalogue comprises:
+1. Request a high-level navigation decision from the planner.
+2. Navigate to web pages conditioned on the selected browsing profile.
+3. Watch streaming content.
+4. Watch YouTube content.
+5. Interact with social media (e.g., X).
+6. Access webmail.
+7. Emulate human interaction through randomized pauses and scrolling.  
 
 ---
 
 ### Gamer (interactive + VoIP)
 
-The gamer agent executes a controlled gameplay session with concurrent real-time communication.
-
-Sequence:
-
-1. Launch the required clients (Steam and Discord/VoIP)  
-2. Wait for and apply client/game updates when present  
-3. Launch the game and execute recorded interaction traces with injected randomness  
-4. Generate non-informational synthetic audio to drive VoIP traffic  
+Gamer (interactive + VoIP).. The gamer agent executes a controlled game-
+play session with concurrent real-time communication. The operational se-
+quence comprises:
+1. Launch the required clients (Steam and Discord/VoIP).
+2. Wait for and apply client/game updates when present (typically TCP-
+dominant bursts).
+3. Launch the game and execute recorded interaction traces with injected
+randomness.
+4. Generate non-informational synthetic audio to drive VoIP traffic with-
+out sensitive content.
 
 ---
 
 ### Network Administrator (internal management)
 
-The administrator agent emulates benign management activity within a host-only topology.
-
-Actions:
-
-1. TCP connectivity checks to managed hosts  
-2. Establish interactive SSH sessions  
-3. Execute system and network monitoring commands  
-4. Inspect and partially read system logs  
-5. Transfer files via SFTP  
-6. Generate ICMP and HTTP traffic for reachability and service checks  
+Network administrator (internal management).. The administrator agent em-
+ulates benign management activity within a host-only topology. The action
+catalogue comprises:
+1. TCP connectivity checks to managed hosts.
+2. Establish interactive SSH sessions to hosts.
+3. Execute system and network monitoring commands.
+4. Inspect and partially read system logs.
+5. Transfer files via SFTP.
+6. Generate ICMP and HTTP traffic from the administrator host for
+reachability and service checks.
 
 ---
 
 ## Constrained Planner Interface (Regular-User Profile)
 
-The regular-user agent uses a language-model-backed planner only to instantiate high-level navigation decisions (e.g., what to search for, which benign URL to open, and how long to dwell).
+The regular-user agent uses a language-model-backed planner only to
+instantiate high-level navigation decisions (e.g., what to search for, which
+benign URL to open, and how long to dwell), while all packet- and protocol-
+level properties remain an emergent result of executing real applications and
+network stacks. To make this component reviewable and reproducible, the
+planner is restricted to a fixed action space and must return a schema-valid
+JSON object. The agent validates each response before execution and logs
+planner configuration and template identifiers as part of the run provenance.
 
-All packet- and protocol-level properties remain an emergent result of executing real applications and network stacks.
+Figure~\ref{fig:web_agent_modules} provides an implementation-oriented decomposition of the regular-user agent.
+The planner is isolated to a narrow decision boundary (schema-constrained action proposals), while orchestration and browser automation are responsible for execution, timing perturbations, and session-budget enforcement.
+Traffic generation is therefore not a separate synthesis step; it is the observable outcome of executing real applications under these constraints.
 
-The planner must return a schema-valid JSON object.
-
+meter imagen
 ---
 
-### Allowed Action Types
+### Action space and parameters.
+Planner outputs select an action type (type)
+and an execution delay in seconds (delay), optionally providing an action-
+specific parameter such as a query term (term), a URL (url), or a content
+search string (search). The permitted action types correspond to the pro-
+file’s browsing repertoire (search, open URL, consume content, and access
+common services).
 
-- search_google  
-- open_url  
-- watch_youtube  
-- show_email  
-- play_streaming  
-- use_twitter  
+### Machine-validated output schema.
+Listing 1 defines the schema enforced at
+runtime. Only schema-compliant outputs are eligible for execution; invalid
+responses are rejected and handled via the fallback policy described below.
 
----
-
-### Enforced JSON Schema
 
 ```json
 {
@@ -122,7 +159,11 @@ The planner must return a schema-valid JSON object.
   "additionalProperties": false
 }
 ```
-### Representative Valid Outputs
+### Representative valid outputs.
+Listing 2 shows examples that satisfy the schema
+and illustrate how semantic variability is introduced at the action layer
+(choice of intent and parameters) while remaining within profile constraints.
+
 ```json
 {"type":"search_google","termin":"latest network security incidents","delay":12}
 {"tipo":"search_google","termino":"weather forecast Malaga","delay":9}
@@ -131,48 +172,45 @@ The planner must return a schema-valid JSON object.
 {"tipo":"show_correo","delay":14}
 ```
 
-### Representative Invalid Outputs
+### Representative invalid outputs and failure modes.
+Listing 3 provides com-
+mon invalid patterns (wrong fields, out-of-range parameters, or non-permitted
+actions). These cases motivate enforcing a strict schema boundary.
+
 ```json
 {"type":"open_url","term":"somewhere","delay":10}
 {"type":"watch_youtube","delay":60}
 {"type":"hack_wifi","delay":10}
 ```
 
-Invalid because:
-
-- Missing required fields
-
-- Delay outside allowed range
-
-- Action type not in permitted enum
+The examples above are invalid, respectively, because they omit a required
+field for the selected action type (url), violate the allowed range for delay,
+or use an action type not contained in the permitted enum.
 
 
 
-### Validation and Fallback Policy
+### Validation and fallback policy.
+Planner outputs are parsed and validated
+against Listing 1 before execution. If validation fails, the agent performs up
+to Rretry re-queries using the same prompt template and the current interac-
+tion context. If all retries fail, the agent executes a predefined safe fallback
+action drawn from an allow listed set (e.g., opening a benign landing page
+or issuing a generic non-sensitive query). In all cases, the raw model output,
+the validation error (when applicable), the selected fallback, and the promp-
+t/template identifier are logged to the run manifest to preserve provenance
+and to enable post-hoc auditing.
 
-Planner outputs are validated against the enforced JSON schema before execution.
+Related agentic LLM frameworks in other safety-critical settings employ
+explicit quality-assurance loops to iteratively verify and correct structured
+outputs; in our case, this role is covered by bounded re-query attempts plus
+a deterministic safe fallback [22].
 
-If validation fails:
-
-The agent performs up to R_retry re-queries
-
-If all retries fail, a predefined safe fallback action is executed
-
-In all cases, the raw model output, validation error, fallback action, and prompt ID are logged
-
-### Decoding Configuration and Versioned Prompts
-
-Each run records:
-
-- Model identifier
-
-- Decoding parameters
-
-- Prompt version
-
-- Prompt SHA256
-
-- Schema version
+### Decoding configuration and versioned prompts.
+To support procedural re-
+producibility, each run records (i) the exact model identifier, (ii) decoding
+parameters, and (iii) the version identifiers of the prompt template and ac-
+tion schema. Listing 4 illustrates a minimal configuration record in YAML
+form.
 
 ```json
 Example:
@@ -192,7 +230,7 @@ artifacts:
   schema_version: planner_schema_v1
 ```
 
-## Automation and Analysis Software Stack
+## Appendix B.4. Automation and analysis software stack
 
 | Component | Role in the framework |
 |----------|-----------------------------|
@@ -203,22 +241,6 @@ artifacts:
 | Sounddevice / soundfile | Synthetic VoIP audio |
 | Paramiko | SSH/SFTP automation |
 | Scapy + Matplotlib | PCAP parsing and analysis | 
-	
-Versioned Components Checklist
 
-## Versioned components checklist
-
-| Component | Exact version / identifier |
-|----------|-----------------------------|
-| Hypervisor (Oracle VM VirtualBox) |  |
-| Windows guest OS build (regular/gamer) |  |
-| Linux guest OS build (administrator) |  |
-| Browser (regular user) |  |
-| Steam client (gamer) |  |
-| Discord client (gamer) |  |
-| Game title + build (gamer) |  |
-| Wireshark version + capture interface |   |
-| tcpdump version + capture interface |   |
-| Agent code revision (e.g., Git commit) |   |
 
 
