@@ -8,16 +8,20 @@ determinism.
 
 | Component | Exact version / identifier |
 |----------|-----------------------------|
-| Hypervisor (Oracle VM VirtualBox) |  |
-| Windows guest OS build (regular/gamer) |  |
-| Linux guest OS build (administrator) |  |
-| Browser (regular user) |  |
-| Steam client (gamer) |  |
-| Discord client (gamer) |  |
-| Game title + build (gamer) |  |
-| Wireshark version + capture interface |   |
-| tcpdump version + capture interface |   |
-| Agent code revision (e.g., Git commit) |   |
+| Hypervisor | Virtualization platform name and exact version (e.g., Oracle VM VirtualBox vX.Y.Z). |
+| Host platform | Host OS and hardware summary (CPU model, RAM). |
+| VM image ID  | Immutable identifier for the VM image used in the run (e.g., export hash). |
+| Snapshot ID | Identifier of the clean snapshot restored before the run. |
+| Guest OS build  | OS distribution/build and kernel/build number (where applicable). |
+| Virtual hardware  | vCPU, RAM, storage allocation, NIC model. |
+| Network configuration | Network mode (NAT / host-only / internal), addressing, and topology ID. |
+| Capture point | Where capture is performed (guest NIC or virtual gateway, when applicable). |
+| Capture interface | Interface name (e.g., Ethernet X, eth0) and link-layer type. |
+| Capture toolchain | Tool name and exact version (Wireshark / tcpdump), invocation parameters. |
+| Agent versioning | Agent code version (e.g., Git commit) and configuration profile ID. |
+| Run parameters | Profile, duration T , run index, random seed (if applicable), start timestamp. |
+| Artifacts | Output filenames and cryptographic checksums for PCAP and manifest. |
+| LLM configuration (if applicable) | Model identifier, decoding parameters, prompt/template version, and action schema version. |
 
 
 # Appendix B. Implementation Notes, Planner Contract, and Profile Action Catalogues
