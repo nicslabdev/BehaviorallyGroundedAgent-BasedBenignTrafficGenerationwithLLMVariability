@@ -1,10 +1,6 @@
 # Appendix A. Run Manifest Field Checklist
 
-To support procedural reproducibility and post-hoc auditing, the frame-
-work can optionally record a per-run manifest capturing environment prove-
-nance, capture provenance, and run metadata. The manifest is intended to
-make experimental conditions auditable without implying byte-level trace
-determinism.
+To support procedural reproducibility and post-hoc auditing, the framework can optionally record a per-run manifest capturing environment provenance, capture provenance, and run metadata. The manifest is intended to make experimental conditions auditable without implying byte-level trace determinism.
 
 | Component | Exact version / identifier |
 |----------|-----------------------------|
@@ -27,18 +23,14 @@ determinism.
 # Appendix B. Implementation Notes, Planner Contract, and Profile Action Catalogues
 
 This appendix consolidates implementation-level artifacts that support
-replication without expanding the main methodological narrative: (i) per-
-profile action catalogues and (ii) the automation and analysis software stack,
+replication without expanding the main methodological narrative: (i) per profile action catalogues and (ii) the automation and analysis software stack,
 including the constrained planner interface and policy parameterization. 
 
 ---
 <!--
 ## Profile Policy Parameterization and State Management
 
-Table B.7 reports the policy hyperparameters that operationalize π(· | P)
-(Section 4.2.1). Reporting these values makes the behavioral assumptions
-explicit and supports reproducibility at the mechanism level, even when byte-
-level trace determinism is not expected.
+Table B.7 reports the policy hyperparameters that operationalize π(· | P) (Section 4.2.1). Reporting these values makes the behavioral assumptions explicit and supports reproducibility at the mechanism level, even when byte-level trace determinism is not expected.
 
 ### Policy Hyperparameters
 
@@ -57,9 +49,7 @@ Fields marked **fill** should be instantiated with the exact values used in the 
 
 ### Regular user (web-centric)
 
-Regular user (web-centric).. The regular-user agent operates exclusively through
-browser interaction driven by a high-level planner and randomized interac-
-tion timing. The action catalogue comprises:
+Regular user (web-centric).. The regular-user agent operates exclusively through browser interaction driven by a high-level planner and randomized interaction timing. The action catalogue comprises:
 1. Request a high-level navigation decision from the planner.
 2. Navigate to web pages conditioned on the selected browsing profile.
 3. Watch streaming content.
@@ -72,23 +62,17 @@ tion timing. The action catalogue comprises:
 
 ### Gamer (interactive + VoIP)
 
-Gamer (interactive + VoIP).. The gamer agent executes a controlled game-play session with concurrent real-time communication. The operational se-
-quence comprises:
+The gamer agent executes a controlled game-play session with concurrent real-time communication. The operational sequence comprises:
 1. Launch the required clients (Steam and Discord/VoIP).
-2. Wait for and apply client/game updates when present (typically TCP-
-dominant bursts).
-3. Launch the game and execute recorded interaction traces with injected
-randomness.
-4. Generate non-informational synthetic audio to drive VoIP traffic with-
-out sensitive content.
+2. Wait for and apply client/game updates when present (typically TCP-dominant bursts).
+3. Launch the game and execute recorded interaction traces with injected randomness.
+4. Generate non-informational synthetic audio to drive VoIP traffic without sensitive content.
 
 ---
 
 ### Network Administrator (internal management)
 
-Network administrator (internal management).. The administrator agent em-
-ulates benign management activity within a host-only topology. The action
-catalogue comprises:
+The administrator agent emulates benign management activity within a host-only topology. The action catalogue comprises:
 1. TCP connectivity checks to managed hosts.
 2. Establish interactive SSH sessions to hosts.
 3. Execute system and network monitoring commands.
@@ -101,14 +85,8 @@ reachability and service checks.
 
 ## Constrained Planner Interface (Regular-User Profile)
 
-The regular-user agent uses a language-model-backed planner only to
-instantiate high-level navigation decisions (e.g., what to search for, which
-benign URL to open, and how long to dwell), while all packet- and protocol-
-level properties remain an emergent result of executing real applications and
-network stacks. To make this component reviewable and reproducible, the
-planner is restricted to a fixed action space and must return a schema-valid
-JSON object. The agent validates each response before execution and logs
-planner configuration and template identifiers as part of the run provenance.
+The regular-user agent uses a language-model-backed planner only to instantiate high-level navigation decisions (e.g., what to search for, which benign URL to open, and how long to dwell), while all packet- and protocol-level properties remain an emergent result of executing real applications and network stacks. To make this component reviewable and reproducible, the
+planner is restricted to a fixed action space and must return a schema-valid JSON object. The agent validates each response before execution and logs planner configuration and template identifiers as part of the run provenance.
 
 The figure below provides an implementation-oriented decomposition of the regular-user agent.
 The planner is isolated to a narrow decision boundary (schema-constrained action proposals), while orchestration and browser automation are responsible for execution, timing perturbations, and session-budget enforcement.
@@ -121,17 +99,10 @@ Traffic generation is therefore not a separate synthesis step; it is the observa
 ---
 
 ### Action space and parameters.
-Planner outputs select an action type (type)
-and an execution delay in seconds (delay), optionally providing an action-
-specific parameter such as a query term (term), a URL (url), or a content
-search string (search). The permitted action types correspond to the pro-
-file’s browsing repertoire (search, open URL, consume content, and access
-common services).
+Planner outputs select an action type (type) and an execution delay in seconds (delay), optionally providing an action-specific parameter such as a query term (term), a URL (url), or a content search string (search). The permitted action types correspond to the profile’s browsing repertoire (search, open URL, consume content, and access common services).
 
 ### Machine-validated output schema.
-The Listing below defines the schema enforced at
-runtime. Only schema-compliant outputs are eligible for execution; invalid
-responses are rejected and handled via the fallback policy described below.
+The Listing below defines the schema enforced at runtime. Only schema-compliant outputs are eligible for execution; invalid responses are rejected and handled via the fallback policy described below.
 
 
 ```json
@@ -159,9 +130,7 @@ responses are rejected and handled via the fallback policy described below.
 }
 ```
 ### Representative valid outputs.
-Listing below shows examples that satisfy the schema
-and illustrate how semantic variability is introduced at the action layer
-(choice of intent and parameters) while remaining within profile constraints.
+Listing below shows examples that satisfy the schema and illustrate how semantic variability is introduced at the action layer (choice of intent and parameters) while remaining within profile constraints.
 
 ```json
 {"type":"search_google","termin":"latest network security incidents","delay":12}
@@ -172,8 +141,7 @@ and illustrate how semantic variability is introduced at the action layer
 ```
 
 ### Representative invalid outputs and failure modes.
-Listing below provides common invalid patterns (wrong fields, out-of-range parameters, or non-permitted
-actions). These cases motivate enforcing a strict schema boundary.
+Listing below provides common invalid patterns (wrong fields, out-of-range parameters, or non-permitted actions). These cases motivate enforcing a strict schema boundary.
 
 ```json
 {"type":"open_url","term":"somewhere","delay":10}
@@ -181,34 +149,19 @@ actions). These cases motivate enforcing a strict schema boundary.
 {"type":"hack_wifi","delay":10}
 ```
 
-The examples above are invalid, respectively, because they omit a required
-field for the selected action type (url), violate the allowed range for delay,
-or use an action type not contained in the permitted enum.
+The examples above are invalid, respectively, because they omit a required field for the selected action type (url), violate the allowed range for delay, or use an action type not contained in the permitted enum.
 
 
 
 ### Validation and fallback policy.
-Planner outputs are parsed and validated
-against Listing 1 before execution. If validation fails, the agent performs up
-to Rretry re-queries using the same prompt template and the current interac-
-tion context. If all retries fail, the agent executes a predefined safe fallback
-action drawn from an allow listed set (e.g., opening a benign landing page
-or issuing a generic non-sensitive query). In all cases, the raw model output,
-the validation error (when applicable), the selected fallback, and the promp-
-t/template identifier are logged to the run manifest to preserve provenance
-and to enable post-hoc auditing.
+Planner outputs are parsed and validated against Listing 1 before execution. If validation fails, the agent performs up to Rretry re-queries using the same prompt template and the current interaction context. If all retries fail, the agent executes a predefined safe fallback action drawn from an allow listed set (e.g., opening a benign landing page or issuing a generic non-sensitive query). 
+In all cases, the raw model output, the validation error (when applicable), the selected fallback, and the prompt/template identifier are logged to the run manifest to preserve provenance and to enable post-hoc auditing.
 
-Related agentic LLM frameworks in other safety-critical settings employ
-explicit quality-assurance loops to iteratively verify and correct structured
-outputs; in our case, this role is covered by bounded re-query attempts plus
-a deterministic safe fallback [22].
+Related agentic LLM frameworks in other safety-critical settings employ explicit quality-assurance loops to iteratively verify and correct structured outputs; in our case, this role is covered by bounded re-query attempts plus a deterministic safe fallback [22].
 
 
 ### Decoding configuration and versioned prompts.
-To support procedural reproducibility, each run records (i) the exact model identifier, (ii) decoding
-parameters, and (iii) the version identifiers of the prompt template and ac-
-tion schema. The listing below illustrates a minimal configuration record in YAML
-form.
+To support procedural reproducibility, each run records (i) the exact model identifier, (ii) decoding parameters, and (iii) the version identifiers of the prompt template and action schema. The listing below illustrates a minimal configuration record in YAML form.
 
 ```json
 Example:
