@@ -14,7 +14,7 @@ Images used in this repository
 Where the captures used to reproduce the experiment are located
 
 ## scripts
-Where the scripts to carry out the experiment are located
+Where the agent scripts and the scripts to carry out the experiment are located
 
 ## Reproducibility Protocol (R=5)
 The capture matrix used in the paper is reproduced
