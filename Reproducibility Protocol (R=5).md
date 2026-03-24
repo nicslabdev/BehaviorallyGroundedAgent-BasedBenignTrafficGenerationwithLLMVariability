@@ -182,8 +182,8 @@ python3 scripts/pcapng_flows_to_csv_and_table.py \
 
 Outputs:
 
-- flows_metrics.csv
-- table_flow_structure.tex
+- *flows_metrics.csv* (per-capture flow metrics) 
+- *table_flow_structure.tex* (Table 5 ready for LaTeX)
 
 
 ## 8. Optional IDS/NDR sanity-check (Isolation Forest)
