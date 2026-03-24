@@ -1,0 +1,38 @@
+QC report for: /Users/antoniomunoz/Desktop/BENIGM AGENT/pcapng/captures_summary.csv
+
+== Captures to re-capture (hard failures) ==
+- capturaAgenteAdmin1h1.pcapng: capinfos_truncated=1; error=tshark_truncated(tcp) | tshark_truncated(udp) | tshark_truncated(icmp) | tshark_truncated(not (tcp or udp or icmp)) | tshark_truncated(io,stat,0) | tshark_truncated(frame.len) | tshark_truncated(udp.dstport == 443) | tshark_truncated(tcp.dstport == 443) | tshark_truncated(io,stat,1) | tshark_truncated(udp.dstport) | tshark_truncated(tcp.dstport); duration_out_of_range(1840.6s not in [3420.0,3780.0])
+
+== Suspicious captures (soft flags; review) ==
+- capturaAgenteAdmin15m1.pcapng: totals_consistent=0
+- capturaAgenteAdmin15m2.pcapng: totals_consistent=0
+- capturaAgenteAdmin15m3.pcapng: totals_consistent=0
+- capturaAgenteAdmin15m4.pcapng: totals_consistent=0
+- capturaAgenteAdmin15m5.pcapng: totals_consistent=0
+- capturaAgenteAdmin1h2.pcapng: totals_consistent=0
+- capturaAgenteAdmin1h3.pcapng: totals_consistent=0
+- capturaAgenteAdmin1h4.pcapng: totals_consistent=0
+- capturaAgenteAdmin1h5.pcapng: totals_consistent=0
+- capturaAgenteAdmin5m1.pcapng: totals_consistent=0; duration_out_of_range(328.5s not in [285.0,315.0])
+- capturaAgenteAdmin5m2.pcapng: totals_consistent=0; duration_out_of_range(337.4s not in [285.0,315.0])
+- capturaAgenteAdmin5m3.pcapng: totals_consistent=0; duration_out_of_range(316.3s not in [285.0,315.0])
+- capturaAgenteAdmin5m4.pcapng: totals_consistent=0; duration_out_of_range(315.7s not in [285.0,315.0])
+- capturaAgenteAdmin5m5.pcapng: totals_consistent=0
+- capturaAgenteGamer15m1.pcapng: totals_consistent=0
+- capturaAgenteGamer15m2.pcapng: duration_out_of_range(984.9s not in [855.0,945.0])
+- capturaAgenteGamer15m3.pcapng: totals_consistent=0
+- capturaAgenteGamer15m4.pcapng: totals_consistent=0
+- capturaAgenteGamer15m5.pcapng: totals_consistent=0
+- capturaAgenteGamer5m1.pcapng: totals_consistent=0
+- capturaAgenteGamer5m3.pcapng: totals_consistent=0; duration_out_of_range(328.8s not in [285.0,315.0])
+- capturaAgenteGamer5m4.pcapng: totals_consistent=0; duration_out_of_range(321.8s not in [285.0,315.0])
+- capturaAgenteGamer5m5.pcapng: totals_consistent=0; duration_out_of_range(390.9s not in [285.0,315.0])
+- capturaAgenteWeb15m2.pcapng: totals_consistent=0
+- capturaAgenteWeb1h1.pcapng: totals_consistent=0
+- capturaAgenteWeb1h2.pcapng: totals_consistent=0
+- capturaAgenteWeb1h3.pcapng: totals_consistent=0; duration_out_of_range(3998.8s not in [3420.0,3780.0])
+- capturaAgenteWeb1h4.pcapng: totals_consistent=0
+- capturaAgenteWeb1h5.pcapng: totals_consistent=0
+- capturaAgenteWeb5m1.pcapng: totals_consistent=0
+- capturaAgenteWeb5m3.pcapng: duration_out_of_range(369.1s not in [285.0,315.0])
+- capturaAgenteWeb5m5.pcapng: duration_out_of_range(355.2s not in [285.0,315.0])
