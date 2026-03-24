@@ -23,7 +23,7 @@ Each run produces:
 ### 2.1 Virtualization and network isolation
 
 - **Hypervisor:** Oracle VM VirtualBox  
-- Capture performed inside each guest on the primary guest interface  
+- Capture performed **inside each guest** on the primary guest interface  
 
 **Network modes:**
 
@@ -71,3 +71,28 @@ Optional (recommended):
 ## 4. Capture naming and folder layout
 
 ### 4.1 Recommended repository layout
+
+```
+repro/
+  pcaps/
+    regular/5m/run1.pcapng ... run5.pcapng
+    regular/15m/...
+    regular/60m/...
+    gamer/...
+    admin/...
+  derived/
+    captures_summary.csv
+    flows_metrics.csv
+    qc_report.txt
+    tables/
+      table_flow_structure.tex
+      table_sanity_iforest.tex (optional)
+  logs/ (optional)
+    regular/15m/run1.log ...
+  scripts/
+    pcapng_batch_to_csv.py
+    qc_captures.py
+    pcapng_flows_to_csv_and_table.py
+    sanity_iforest.py (optional)
+
+```
