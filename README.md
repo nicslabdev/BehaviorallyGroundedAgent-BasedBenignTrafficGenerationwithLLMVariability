@@ -7,17 +7,17 @@ The structure of this repository is as follows:
 ## derived
 Where the results of the runs are stored
 
-# Images
+## images
 Images used in this repository
 
-# pcaps
+## pcaps
 Where the captures used to reproduce the experiment are located
 
-# scripts
+## scripts
 Where the scripts to carry out the experiment are located
 
-# Reproducibility Protocol (R=5)
+## Reproducibility Protocol (R=5)
 The capture matrix used in the paper is reproduced
 
-# appendix
+## appendix
 Appendices to the article
