@@ -113,8 +113,7 @@ The scripts support glob patterns such as ```capturaAgente*.pcapng```. If you ke
 
 Script: *scripts/pcapng_batch_to_csv.py*
 
-
-Outputs per-capture metrics:
+This script parses each .pcapng and produces per-capture totals and protocol counters, including:
 
 - `bytes_total`
 - `packets_total`
@@ -125,7 +124,7 @@ Outputs per-capture metrics:
 - `icmp_pkts`
 - `other_pkts`
 - `udp443_pkts` (QUIC-like indicator)
-- Top destination ports
+- `Top destination ports`
 
 Run:
 
